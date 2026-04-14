@@ -1,0 +1,40 @@
+name: Label Code-Gen - Claude Auto PR
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  code-gen:
+    # 'code-gen' 라벨이 붙었을 때만 실행
+    if: github.event.label.name == 'code-gen'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate code with Claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          # OAuth Token(Pro/Max) 또는 API Key 중 설정된 것을 사용
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          system_prompt: |
+            당신은 이 레포지토리의 코드 생성 AI입니다.
+            issue 내용을 분석하여 다음을 수행하세요:
+
+            1. issue의 요구사항을 파악하세요
+            2. 기존 코드 패턴과 컨벤션을 따라 코드를 작성하세요
+            3. 필요한 테스트가 있으면 함께 작성하세요
+            4. 변경사항에 대한 설명을 PR 본문에 포함하세요
+
+            브랜치 이름은 issue 본문의 '## 브랜치' 섹션에서 찾으세요.
+            없으면 `feat/issue-{번호}-{간결한설명}` 형식으로 생성하세요.
+
+            코드 품질을 최우선으로 하되, 간결하고 실용적인 코드를 작성하세요.
+            항상 한국어로 커밋 메시지와 PR 설명을 작성하세요.
