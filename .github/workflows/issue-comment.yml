@@ -9,11 +9,11 @@ jobs:
     # 봇 자신의 comment에는 반응하지 않음 (무한루프 방지)
     if: |
       !github.event.issue.pull_request &&
-      github.event.comment.user.login != 'github-actions[bot]' &&
-      github.event.comment.user.login != 'claude[bot]'
+      github.event.comment.user.type != 'Bot'
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write
       issues: write
 
     steps:
@@ -26,21 +26,6 @@ jobs:
           # OAuth Token(Pro/Max) 또는 API Key 중 설정된 것을 사용
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          trigger_phrase: ""
-          system_prompt: |
-            당신은 이 레포지토리의 AI 어시스턴트입니다.
-            issue에 달린 comment를 분석하여 다음 중 적절한 행동을 취하세요:
-
-            1. comment가 issue의 요구사항을 명확히 하거나 수정하는 내용이면:
-               - issue 본문을 업데이트하여 반영하세요
-               - 어떤 부분을 수정했는지 답글로 알려주세요
-
-            2. comment의 내용이 불명확하거나 추가 정보가 필요하면:
-               - 구체적인 질문을 답글로 작성하세요
-               - 가능하면 선택지를 제시하세요
-
-            3. comment가 감사 인사나 단순 확인이면:
-               - 간단히 확인 응답만 하세요
-
-            항상 한국어로 응답하세요.
-            답변은 간결하고 핵심적으로 작성하세요.
+          trigger_phrase: "@claude"
+          claude_args: |
+            --append-system-prompt "당신은 이 레포지토리의 AI 어시스턴트입니다. issue comment를 분석해 적절히 행동하세요. comment가 issue 요구사항을 명확히 하거나 수정하는 내용이면 issue 본문을 업데이트하고 변경 내용을 답글로 알리세요. 내용이 불명확하거나 추가 정보가 필요하면 구체적인 질문을 답글로 작성하세요. 감사 인사나 단순 확인이면 간단히 응답하세요. 항상 한국어로 간결하게 답하세요."
