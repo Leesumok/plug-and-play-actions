@@ -27,5 +27,14 @@ jobs:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           trigger_phrase: "@claude"
+          settings: |
+            {
+              "permissions": {
+                "allow": [
+                  "Bash(gh issue edit:*)",
+                  "Bash(gh issue view:*)"
+                ]
+              }
+            }
           claude_args: |
             --append-system-prompt "당신은 이 레포지토리의 AI 어시스턴트입니다. issue comment를 분석해 적절히 행동하세요. comment가 issue 요구사항을 명확히 하거나 수정하는 내용이면 issue 본문을 업데이트하고 변경 내용을 답글로 알리세요. 내용이 불명확하거나 추가 정보가 필요하면 구체적인 질문을 답글로 작성하세요. 감사 인사나 단순 확인이면 간단히 응답하세요. 항상 한국어로 간결하게 답하세요."
